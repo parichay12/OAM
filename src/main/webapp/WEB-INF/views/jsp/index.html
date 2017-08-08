@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+
+<body>
+
+<div ng-app="myApp" ng-controller='testController'>
+  <p><input type="submit" ng-click="callService()"></p>
+  <p ng-bind="response1"></p>
+  <p ng-bind="response2"></p>
+  <p ng-bind="response3"></p>
+  <p ng-bind="response4"></p>
+</div>
+<script>
+var app=angular.module('myApp',[]);
+app.controller("testController",['$scope','$http','$timeout', function($scope,$http,$timeout){
+    $scope.response1 = '';  
+    $scope.response2 = ''; 
+    $scope.response3 = ''; 
+    $scope.response4 = ''; 
+	var id =1;
+       var ajax = function(type,url,data) {
+          
+                  var temp = data;
+                 // var url = url+"?random="+new Date().getTime();
+                   return $http({method:type, url:url, data:temp,headers: {
+                               'Content-Type': 'application/json'
+                        } }).then(function(result){
+
+                        //alert('call success1');
+                         $scope.response1 = result.data[0];
+                         $timeout(function(){
+                        	 $http({method:'GET', url:'http://localhost:8080/deferred/'+2, data:'',headers: {
+	                             'Content-Type': 'application/json'
+	                     	 } }).then(function(result){
+	
+	                     //  alert('call success2');
+	                       $scope.response2 = result.data[0];
+	                       $timeout(function(){
+	                    	   $http({method:'GET', url:'http://localhost:8080/deferred/'+3, data:'',headers: {
+		                             'Content-Type': 'application/json'
+		                     	 } }).then(function(result){
+		
+		                     //  alert('call success3');
+		                       $scope.response3 = result.data[0];
+		                       $timeout(function(){
+		                    	   $http({method:'GET', url:'http://localhost:8080/deferred/'+4, data:'',headers: {
+			                             'Content-Type': 'application/json'
+			                     	 } }).then(function(result){
+			
+			                  //     alert('call success4');
+			                       $scope.response4 = result.data[0];
+			                       
+			                 	},function(result){
+			
+			                     alert('call failure4');
+			               		});
+		                       },5000);
+				                      
+		                       
+		                 	},function(result){
+		
+		                     alert('call failure3');
+		               		});
+	                       },5000);
+			                      
+	                       
+	                 	},function(result){
+	
+	                     alert('call failure2');
+	               		});  
+                         },5000);
+					                               
+                         
+                   },function(result){
+
+                       alert('call failure1');
+                       console.log(result);
+                 }); 
+      };
+
+      $scope.callService = function(){
+    	  
+   	   		ajax('GET','http://localhost:8080/deferred/'+id,'');
+      };
+      
+      
+      
+}]);
+</script>
+</body>
+</html>
